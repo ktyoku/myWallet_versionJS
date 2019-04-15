@@ -2,6 +2,7 @@
 var createAccountSection = document.getElementById('createAccount');
 var importAccountSection = document.getElementById('importAccount');
 var viewWalletSection = document.getElementById('viewWallet');
+var sendETHSection = document.getElementById('sendETH');
 let inputTags = document.getElementsByTagName('input');
 let downloadTag = document.getElementById('download');
 let textareaTags = document.getElementsByTagName('textarea');
@@ -79,6 +80,7 @@ document.getElementById('unlockWithKey').addEventListener('click', function(){
 
     importAccountSection.style.display = 'none';
     viewWalletSection.style.display = 'block';
+    sendETHSection.style.display = 'block';
 
   }
 })
@@ -116,5 +118,53 @@ document.getElementById('unlockWithKeystore').addEventListener('click', function
 
     importAccountSection.style.display = 'none';
     viewWalletSection.style.display = 'block';
+    sendETHSection.style.display = 'block';
   }
+})
+
+document.getElementById('generateTransaction').addEventListener('click', async function(){
+  let addressFrom = document.querySelector('#yourAddress td').textContent;
+  let addressTo = document.getElementById('toAddress').value;
+  let gasPrice = document.getElementById('gasPrice').value;
+  let gasLimit = document.getElementById('gasLimit').value;
+  let value =  document.getElementById('amountToSend').value;
+  let privateKey = document.querySelector('#yourPrivateKey td').textContent
+
+  let nonce = await web3.eth.getTransactionCount(addressFrom);
+  let rawTransaction = {
+          nonce: web3.utils.toHex(nonce),
+          gasPrice: web3.utils.toHex(gasPrice),
+          gasLimit: web3.utils.toHex(gasLimit),
+          to: addressTo,
+          value: web3.utils.toHex(web3.utils.toWei(value, 'ether')),
+          data: "0x"
+        };
+  let transaction =  new ethereumjs.Tx(rawTransaction);
+  privateKey = new ethereumjs.Buffer.Buffer(privateKey.substr(2), 'hex');
+  transaction.sign(privateKey);
+  let serializeTx = transaction.serialize();
+  let signedTransaction = '0x' + serializeTx.toString('hex');
+
+  document.getElementById('rawTransaction').textContent = JSON.stringify(rawTransaction);
+  document.getElementById('signedTransaction').textContent = signedTransaction;
+})
+
+document.getElementById('sendTransaction').addEventListener('click', function(){
+  let signedTransaction = document.getElementById('signedTransaction').textContent;
+
+  web3.eth.sendSignedTransaction(signedTransaction)
+    .on('transactionHash', function(hash){
+      console.log(hash);
+    })
+    .on('receipt', function(receipt){
+      console.log(receipt);
+
+      let account = web3.eth.accounts.privateKeyToAccount(document.querySelector('#yourPrivateKey td').textContent);
+      importAccount(account);
+      resetTX();
+      $('#sendTxModal').modal('hide')
+    })
+    .on('error', function(error){
+      alert(error)
+    });
 })

@@ -55,3 +55,8 @@ function resetForm(){
 
   downloadTag.removeAttribute('href');
 }
+
+function resetTX(){
+  document.getElementById('rawTransaction').textContent = '';
+  document.getElementById('signedTransaction').textContent = '';
+}
