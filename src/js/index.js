@@ -12,13 +12,16 @@ let cards = document.querySelectorAll('.card');
 let headTabs = document.getElementsByClassName('nav-item');
 
 const web3 = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/v3/ba41ececaf944f7bbdf9bf62f916f8a8"));
+let erc20Contract = new web3.eth.Contract(ierc20Abi);
+let erc721Contract = new web3.eth.Contract(ierc721Abi);
+
 
 const account0Address = "0x37F9C70E4E96fDCB938504D0e66b907F20989b62";
 //   private = 61ddf633529ce7fe8307c855b88f0db661b5419d652f7ee21aaa9a34b4840b58
 //   address = 0x94c3E22d1fC12aEA361Bc9a34a179E28E5e44284
 
-const address20 = "0x038d7ce57e07e92f9f2fb666eaffea058901ef40"
-const address721 = "0x8e78d311cea20279a19ee237ad381f5d3a64bc91";
+const address20 = "0x220b27d77a5ae634575cb2392bdbf7a1557798a0"
+const address721 = "0xe0bfcd86343c0ffc5f5191ef1734651906b706ee";
 let keyObj;
 
 
@@ -128,28 +131,69 @@ document.getElementById('generateTransaction').addEventListener('click', async f
   let gasPrice = document.getElementById('gasPrice').value;
   let gasLimit = document.getElementById('gasLimit').value;
   let value =  document.getElementById('amountToSend').value;
-  let privateKey = document.querySelector('#yourPrivateKey td').textContent
+  let privateKey = document.querySelector('#yourPrivateKey td').textContent;
+  let unit = document.querySelector('.dropdown-toggle').textContent;
 
-  let nonce = await web3.eth.getTransactionCount(addressFrom);
-  let rawTransaction = {
-          nonce: web3.utils.toHex(nonce),
-          gasPrice: web3.utils.toHex(gasPrice),
-          gasLimit: web3.utils.toHex(gasLimit),
-          to: addressTo,
-          value: web3.utils.toHex(web3.utils.toWei(value, 'ether')),
-          data: "0x"
-        };
-  let transaction =  new ethereumjs.Tx(rawTransaction);
-  privateKey = new ethereumjs.Buffer.Buffer(privateKey.substr(2), 'hex');
-  transaction.sign(privateKey);
-  let serializeTx = transaction.serialize();
-  let signedTransaction = '0x' + serializeTx.toString('hex');
+  if (unit === 'Rinkeby ETH') {
+    let nonce = await web3.eth.getTransactionCount(addressFrom);
+    let rawTransaction = {
+            nonce: web3.utils.toHex(nonce),
+            gasPrice: web3.utils.toHex(gasPrice),
+            gasLimit: web3.utils.toHex(gasLimit),
+            to: addressTo,
+            value: web3.utils.toHex(web3.utils.toWei(value, 'ether')),
+            data: "0x"
+          };
+    let transaction =  new ethereumjs.Tx(rawTransaction);
+    privateKey = new ethereumjs.Buffer.Buffer(privateKey.substr(2), 'hex');
+    transaction.sign(privateKey);
+    let serializeTx = transaction.serialize();
+    let signedTransaction = '0x' + serializeTx.toString('hex');
 
-  document.getElementById('rawTransaction').textContent = JSON.stringify(rawTransaction);
-  document.getElementById('signedTransaction').textContent = signedTransaction;
+    document.getElementById('rawTransaction').textContent = JSON.stringify(rawTransaction);
+    document.getElementById('signedTransaction').textContent = signedTransaction;
+  } else {
+    const contractAddress = document.getElementById(unit).getAttribute('contractAddress');
+    erc20Contract.options.address = contractAddress;
+    const decimals = document.getElementById(unit).getAttribute('decimals');
+    value = value * (10 ** decimals);
+
+    // console.log(value);
+    const estimateGas = await erc20Contract.methods.transfer(addressTo, value.toString()).estimateGas({from: addressFrom})
+    .then((gasAmount) => {
+      return gasAmount;
+    })
+    .catch(function(error){
+        console.log(error);
+    });
+
+    if (gasLimit < estimateGas) {
+      alert(estimateGas + '以上にgasLimitを設定しましょう')
+      return false;
+    }
+
+    let data = erc20Contract.methods.transfer(addressTo, value.toString()).encodeABI();
+    let nonce = await web3.eth.getTransactionCount(addressFrom);
+    let rawTransaction = {
+            nonce: web3.utils.toHex(nonce),
+            gasPrice: web3.utils.toHex(gasPrice),
+            gasLimit: web3.utils.toHex(gasLimit),
+            to: contractAddress,
+            data: data
+          };
+    let transaction =  new ethereumjs.Tx(rawTransaction);
+    privateKey = new ethereumjs.Buffer.Buffer(privateKey.substr(2), 'hex');
+    transaction.sign(privateKey);
+    let serializeTx = transaction.serialize();
+    let signedTransaction = '0x' + serializeTx.toString('hex');
+
+    document.getElementById('rawTransaction').textContent = JSON.stringify(rawTransaction);
+    document.getElementById('signedTransaction').textContent = signedTransaction;
+  }
 })
 
 document.getElementById('sendTransaction').addEventListener('click', function(){
+  let rawTransaction = document.getElementById('rawTransaction').textContent
   let signedTransaction = document.getElementById('signedTransaction').textContent;
 
   web3.eth.sendSignedTransaction(signedTransaction)
@@ -159,6 +203,10 @@ document.getElementById('sendTransaction').addEventListener('click', function(){
     .on('receipt', function(receipt){
       console.log(receipt);
 
+      if (JSON.parse(rawTransaction).data != '0x') {
+        console.log("hoge");
+        changeTokenBalance(receipt.to);//バランスの変更
+      }
       let account = web3.eth.accounts.privateKeyToAccount(document.querySelector('#yourPrivateKey td').textContent);
       importAccount(account);
       resetTX();
@@ -167,4 +215,94 @@ document.getElementById('sendTransaction').addEventListener('click', function(){
     .on('error', function(error){
       alert(error)
     });
+})
+
+document.getElementById('saveToken20').addEventListener('click', function(){
+  const contractAddress = document.getElementById('token20ContractAddress').value;
+  const symbol = document.getElementById('token20Symbol').value;
+  const decimals = document.getElementById('decimals').value;
+  const address = document.querySelector('#yourAddress td').textContent;
+
+  erc20Contract.options.address = contractAddress;
+  erc20Contract.methods.balanceOf(address).call().then((value) => {
+    const tr = document.createElement('tr');
+    tr.setAttribute('contractAddress', contractAddress);
+    tr.setAttribute('decimals', decimals);
+    tr.setAttribute('id', symbol);
+    const tdBalance = document.createElement('td');
+    const tdSymbol = document.createElement('td');
+    const tdType = document.createElement('td');
+
+    tdBalance.textContent = value/(10**decimals);
+    tdSymbol.textContent = symbol;
+    tdType.textContent = "ERC20";
+
+    tr.appendChild(tdBalance);
+    tr.appendChild(tdSymbol);
+    tr.appendChild(tdType);
+
+    document.getElementById('tokenBalanceBody').appendChild(tr);
+
+    const newUnit = document.createElement('a');
+    newUnit.classList.add('dropdown-item');
+    newUnit.setAttribute('value', symbol);
+    newUnit.textContent = symbol;
+    newUnit.addEventListener('click', changeUnit);
+
+    document.querySelector('.dropdown-menu').appendChild(newUnit);
+  });
+})
+
+document.querySelector('.dropdown-item').addEventListener('click', changeUnit);
+
+document.getElementById('saveToken721').addEventListener('click', function(){
+  const contractAddress = document.getElementById('token721ContractAddress').value;
+  const symbol = document.getElementById('token721Symbol').value;
+  const accountAddress = document.querySelector('#yourAddress td').textContent;
+
+  erc721Contract.options.address = contractAddress;
+  erc721Contract.methods.balanceOf(accountAddress).call().then((value) => {
+    const tr = document.createElement('tr');
+    tr.setAttribute('contractAddress', contractAddress);
+    tr.setAttribute('id', symbol);
+    const tdBalance = document.createElement('td');
+    const tdSymbol = document.createElement('td');
+    const tdType = document.createElement('td');
+
+    tdBalance.textContent = value;
+    tdSymbol.textContent = symbol;
+    tdType.textContent = "ERC721";
+
+    tr.appendChild(tdBalance);
+    tr.appendChild(tdSymbol);
+    tr.appendChild(tdType);
+
+    document.getElementById('tokenBalanceBody').appendChild(tr);
+
+    for (let i = 0; i < value; i++) {
+      erc721Contract.methods.tokenOfOwnerByIndex(accountAddress, i).call().then((tokenId) => {
+        erc721Contract.methods.tokenURI(tokenId).call().then((uri) => {
+          var request = new XMLHttpRequest();
+          request.open('GET', uri);
+          request.responseType = 'json';
+          request.send();
+          request.onload = function() {
+            const card = "<div class='col-sm-4' contractAddress='" + contractAddress + "' tokenId='" + tokenId + "'>" +
+                         "<div class='card'>" +
+                         "<img src='" + request.response.image + "' class='card-img-top' alt='...'>" +
+                         "<div class='card-body'>" +
+                         "<p class='card-title'>" + request.response.name + "</p>" +
+                         "<div class='form-group'>" +
+                         "<input type='text' class='form-control' placeholder='e.g:0x1ed3...'>" +
+                         "</div>" +
+                         "<button type='submit' class='btn btn-primary btn-block transfer'>Transfer</button>" +
+                         "</div>" +
+                         "</div>"
+            document.querySelector('#viewERC721 .row').innerHTML = card;
+          }
+        })
+      })
+    }
+  })
+
 })

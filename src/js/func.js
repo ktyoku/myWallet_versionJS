@@ -60,3 +60,25 @@ function resetTX(){
   document.getElementById('rawTransaction').textContent = '';
   document.getElementById('signedTransaction').textContent = '';
 }
+
+function changeUnit(){
+  const unit = document.querySelector('.dropdown-toggle');
+  unit.textContent = this.textContent;
+}
+
+async function changeTokenBalance(contractAddress){
+  console.log("hoge");
+  console.log(contractAddress);
+  erc20Contract.options.address = contractAddress;
+  let owner = document.querySelector('#yourAddress td').textContent;
+
+  let tokens = document.querySelectorAll('#tokenBalanceBody tr');
+  for (let i = 0; i < tokens.length; i++) {
+    if (tokens[i].getAttribute('contractAddress') == contractAddress) {
+      erc20Contract.methods.balanceOf(owner).call().then((value) => {
+        let decimals = tokens[i].getAttribute('decimals');
+        tokens[i].firstChild.textContent = value/(10 ** decimals);
+      })
+    }
+  }
+}

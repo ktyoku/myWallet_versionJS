@@ -132,7 +132,7 @@
               </tr>
               <tr id="yourPrivateKey">
                 <th scope="row">Private Key</th>
-                <td></td>
+                <td>0x61ddf633529ce7fe8307c855b88f0db661b5419d652f7ee21aaa9a34b4840b58</td>
               </tr>
               <tr id="yourBalance">
                 <th scope="row">Account Balance</th>
@@ -151,7 +151,7 @@
           <form>
             <div class="form-group">
               <label for="toAddress">To address</label>
-              <input type="email" class="form-control" id="toAddress" placeholder="0x06AdaAe3640a9106247505584244D93EBefB86aE" value="	0xc9F3d1746459c699a66977E8075d2Ccf1932e3Ad">
+              <input type="text" class="form-control" id="toAddress" placeholder="0x06AdaAe3640a9106247505584244D93EBefB86aE" value="0xc9F3d1746459c699a66977E8075d2Ccf1932e3Ad">
             </div>
             <div class="form-group">
               <label for="amount">Amount to Send</label>
@@ -199,6 +199,88 @@
       </div>
     </section>
 
+    <section id="viewERC721">
+      <div class="card">
+        <div class="card-header">send ERC721 token</div>
+        <div class="card-body row">
+          <div class="col-sm-4">
+            <div class="card">
+              <img src="./src/dog.jpg" class="card-img-top" alt="...">
+              <div class="card-body">
+                <p class="card-title">dog</p>
+                <div class='form-group'>
+                  <input type='text' class='form-control' placeholder='e.g:0x1ed3...'>
+                </div>
+                <button type='submit' class='btn btn-primary btn-block transfer'>Transfer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="customToken" class="row">
+      <div class="col-sm-6">
+        <div class="card" id="addToken">
+          <div class="card-header bg-success text-white">Add Custom Token</div>
+          <div class="card-body">
+            <div id="group_addTokenBtn" class="btn-group" role="group" aria-label="Add Custom Token">
+              <button type="button" class="btn btn-secondary" id="add20TokenBtn">Add ERC20 Token</button>
+              <button type="button" class="btn btn-dark" id="add721TokenBtn">Add ERC721 Token</button>
+            </div>
+            <div id="add20Token" class="clearfix">
+              <h2>Add ERC20 Token</h2>
+              <div class="form-group">
+                <label for="tokenContractAddress">Token Contract Address</label>
+                <input type="text" class="form-control" id="token20ContractAddress" placeholder="0x46c814f334be2e867bb38b1abe48f529e767007b" value="0x220b27d77a5ae634575cb2392bdbf7a1557798a0">
+              </div>
+              <div class="form-group">
+                <label for="tokenSymbol">Token Symbol</label>
+                <input type="text" class="form-control" id="token20Symbol" placeholder="BCC" value="BT">
+              </div>
+              <div class="form-group">
+                <label for="decimals">Decimals</label>
+                <input type="text" class="form-control" id="decimals" placeholder="18" value="18">
+              </div>
+              <button type="button" name="button" class="btn btn-success float-left" id="saveToken20">Save</button>
+            </div>
+            <div id="add721Token">
+              <h2>Add ERC721 Token</h2>
+              <div class="form-group">
+                <label for="tokenContractAddress">Token Contract Address</label>
+                <input type="text" class="form-control" id="token721ContractAddress" placeholder="0x46c814f334be2e867bb38b1abe48f529e767007b" value="0xe0bfcd86343c0ffc5f5191ef1734651906b706ee">
+              </div>
+              <div class="form-group">
+                <label for="tokenSymbol">Token Symbol</label>
+                <input type="text" class="form-control" id="token721Symbol" placeholder="BCC" value="DOG">
+              </div>
+              <button type="button" name="button" class="btn btn-success float-left" id="saveToken721">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="card" id="tokenBalance">
+          <div class="card-header bg-success text-white">Token Balance</div>
+          <div class="card-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Balance</th>
+                  <th scope="col">Symbol</th>
+                  <th scope="col">Type</th>
+                </tr>
+              </thead>
+              <tbody id="tokenBalanceBody">
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </div>
 
   <div class="modal fade" id="sendTxModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -222,9 +304,9 @@
     </div>
   </div>
 
+  <script src="./src/js/ierc20Abi.js"></script>
+  <script src="./src/js/ierc721Abi.js"></script>
+  <script src="./src/js/func.js"></script>
   <script src="./src/js/index.js"></script>
-  <script src="./src/js/func.js">
-
-  </script>
 </body>
 </html>
