@@ -287,6 +287,7 @@ document.getElementById('saveToken721').addEventListener('click', function(){
           request.responseType = 'json';
           request.send();
           request.onload = function() {
+            //TODO:これだと複数の場合活用できない。
             const card = "<div class='col-sm-4' contractAddress='" + contractAddress + "' tokenId='" + tokenId + "'>" +
                          "<div class='card'>" +
                          "<img src='" + request.response.image + "' class='card-img-top' alt='...'>" +
@@ -295,7 +296,7 @@ document.getElementById('saveToken721').addEventListener('click', function(){
                          "<div class='form-group'>" +
                          "<input type='text' class='form-control' placeholder='e.g:0x1ed3...'>" +
                          "</div>" +
-                         "<button type='submit' class='btn btn-primary btn-block transfer'>Transfer</button>" +
+                         "<button type='submit' class='btn btn-primary btn-block transfer' onclick='transferERC721(this)'>Transfer</button>" +
                          "</div>" +
                          "</div>"
             document.querySelector('#viewERC721 .row').innerHTML = card;
