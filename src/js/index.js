@@ -11,6 +11,9 @@ let cards = document.querySelectorAll('.card');
 
 let headTabs = document.getElementsByClassName('nav-item');
 
+const tokenTabs = document.getElementsByClassName('tokenTab');
+const saveTokenForms = document.getElementsByClassName('saveTokenFrom');
+
 const web3 = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/v3/ba41ececaf944f7bbdf9bf62f916f8a8"));
 let erc20Contract = new web3.eth.Contract(ierc20Abi);
 let erc721Contract = new web3.eth.Contract(ierc721Abi);
@@ -307,3 +310,15 @@ document.getElementById('saveToken721').addEventListener('click', function(){
   })
 
 })
+
+for (let i = 0; i < tokenTabs.length; i++) {
+  tokenTabs[i].addEventListener('click', function(){
+    for (let j = 0; j < saveTokenForms.length; j++) {
+      if (i === j) {
+        saveTokenForms[j].style.display = "block";
+      } else {
+        saveTokenForms[j].style.display = "none";
+      }
+    }
+  })
+}

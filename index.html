@@ -10,6 +10,7 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   <script src="./src/js/web3.min.js"></script>
   <script src="./src/js/ethereumjs-tx-1.3.3.min.js"></script>
+  <script src="./src/js/ethereumjs-wallet-0.6.0.min.js"></script>
   <title>myWallet</title>
 </head>
 <body>
@@ -226,10 +227,10 @@
           <div class="card-header bg-success text-white">Add Custom Token</div>
           <div class="card-body">
             <div id="group_addTokenBtn" class="btn-group" role="group" aria-label="Add Custom Token">
-              <button type="button" class="btn btn-secondary" id="add20TokenBtn">Add ERC20 Token</button>
-              <button type="button" class="btn btn-dark" id="add721TokenBtn">Add ERC721 Token</button>
+              <button type="button" class="btn btn-secondary tokenTab" id="add20TokenBtn">Add ERC20 Token</button>
+              <button type="button" class="btn btn-dark tokenTab" id="add721TokenBtn">Add ERC721 Token</button>
             </div>
-            <div id="add20Token" class="clearfix">
+            <div id="add20Token" class="clearfix saveTokenFrom">
               <h2>Add ERC20 Token</h2>
               <div class="form-group">
                 <label for="tokenContractAddress">Token Contract Address</label>
@@ -245,7 +246,7 @@
               </div>
               <button type="button" name="button" class="btn btn-success float-left" id="saveToken20">Save</button>
             </div>
-            <div id="add721Token">
+            <div id="add721Token" class="saveTokenFrom" style="display: none;">
               <h2>Add ERC721 Token</h2>
               <div class="form-group">
                 <label for="tokenContractAddress">Token Contract Address</label>
