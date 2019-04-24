@@ -10,10 +10,16 @@ function changeTabs(){
         document.getElementById('createAccount').style.display = 'none';
         importAccountSection.style.display = 'block';
         viewWalletSection.style.display = 'none';
+        sendETHSection.style.display = 'none';
+        viewERC721Section.style.display = 'none';
+        customTokenSection.style.display = 'none';
       } else {
         document.getElementById('createAccount').style.display = 'block';
         importAccountSection.style.display = 'none';
         viewWalletSection.style.display = 'none';
+        sendETHSection.style.display = 'none';
+        viewERC721Section.style.display = 'none';
+        customTokenSection.style.display = 'none';
       }
       resetForm();
     }, false);

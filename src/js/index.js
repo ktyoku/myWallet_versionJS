@@ -3,6 +3,8 @@ var createAccountSection = document.getElementById('createAccount');
 var importAccountSection = document.getElementById('importAccount');
 var viewWalletSection = document.getElementById('viewWallet');
 var sendETHSection = document.getElementById('sendETH');
+var viewERC721Section = document.getElementById('viewERC721');
+var customTokenSection = document.getElementById('customToken');
 let inputTags = document.getElementsByTagName('input');
 let downloadTag = document.getElementById('download');
 let textareaTags = document.getElementsByTagName('textarea');
@@ -59,6 +61,9 @@ document.getElementById('createNewAccount').addEventListener('click', function()
       importAccountSection.style.display = 'none';
       createAccountSection.style.display = 'none';
       viewWalletSection.style.display = 'block';
+      sendETHSection.style.display = 'block';
+      viewERC721Section.style.display = 'block';
+      customTokenSection.style.display = 'flex';
       headTabs[1].classList.remove('active');
       headTabs[0].classList.add('active');
     })
@@ -92,6 +97,8 @@ document.getElementById('unlockWithKey').addEventListener('click', function(){
     importAccountSection.style.display = 'none';
     viewWalletSection.style.display = 'block';
     sendETHSection.style.display = 'block';
+    viewERC721Section.style.display = 'block';
+    customTokenSection.style.display = 'flex';
 
   }
 })
@@ -130,6 +137,8 @@ document.getElementById('unlockWithKeystore').addEventListener('click', function
     importAccountSection.style.display = 'none';
     viewWalletSection.style.display = 'block';
     sendETHSection.style.display = 'block';
+    viewERC721Section.style.display = 'block';
+    customTokenSection.style.display = 'flex';
   }
 })
 
