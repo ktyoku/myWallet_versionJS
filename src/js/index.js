@@ -77,7 +77,12 @@ document.getElementById('continue').addEventListener('click', function(){
 document.getElementById('unlockWithKey').addEventListener('click', function(){
   let privateKey = document.getElementById('inputKey').value;
 
-  if (!privateKey.match(/^[0-9A-Fa-f]{64}$/)) {
+  let privateKeyBuffer = ethereumjs.Util.toBuffer("0x" + privateKey)
+  // console.log(utilBuffer);
+  let judgePrivateKey = ethereumjs.Util.isValidPrivate(privateKeyBuffer)
+  console.log(judgePrivateKey)
+
+  if (!ethereumjs.Util.isValidPrivate(privateKeyBuffer)) {
     alert('Enter the private key.')
   } else {
     let account = web3.eth.accounts.privateKeyToAccount('0x' + privateKey);
@@ -148,6 +153,7 @@ document.getElementById('generateTransaction').addEventListener('click', async f
             data: "0x"
           };
     let transaction =  new ethereumjs.Tx(rawTransaction);
+    console.log(transaction);
     privateKey = new ethereumjs.Buffer.Buffer(privateKey.substr(2), 'hex');
     transaction.sign(privateKey);
     let serializeTx = transaction.serialize();
