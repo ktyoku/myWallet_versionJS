@@ -1,3 +1,3 @@
-# myWalle_versionJS
+# myWallet_versionJS
 
 BCCにおけるwallet教材のJavascript versionの回答
